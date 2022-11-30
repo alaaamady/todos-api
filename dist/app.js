@@ -39,14 +39,13 @@ require('dotenv').config();
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const bodyParser = __importStar(require("body-parser"));
-const bcrypt = __importStar(require("bcrypt"));
 const jwt = __importStar(require("jsonwebtoken"));
+const bcrypt = __importStar(require("bcrypt"));
 const todo_model_1 = __importDefault(require("./models/todo.model"));
 const user_model_1 = __importDefault(require("./models/user.model"));
 const app = (0, express_1.default)();
 const port = 3000;
 /**Base Setup */
-// app.use(cors());
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
 app.use(bodyParser.json());
 const dbHost = 'mongodb://127.0.0.1/alaa-mady';
@@ -135,10 +134,10 @@ app.get("/isUserAuth", (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 /** CRUDs */
 todoRoutes.route('/:id').get((req, res) => {
     const id = req.params.id;
-    todo_model_1.default.findById(id, (e, message) => {
+    todo_model_1.default.findById(id, (e, todo) => {
         if (e)
             console.log(`Error getting todo item with id: ${id}`);
-        res.json(message);
+        res.json(todo);
     });
 });
 todoRoutes.route('/create').post((req, res) => {
@@ -154,23 +153,31 @@ todoRoutes.route('/create').post((req, res) => {
 });
 todoRoutes.route('/edit/:id').put((req, res) => {
     const id = req.params.id;
-    todo_model_1.default.findById(id, (e, message) => {
+    todo_model_1.default.findById(id, (e, todo) => {
         var _a, _b;
-        if (!message) {
+        if (!todo) {
             res.status(404).send("Todo not found");
         }
         else {
-            message.title = (_a = req.body.title) !== null && _a !== void 0 ? _a : message.title;
-            message.completed = (_b = req.body.completed) !== null && _b !== void 0 ? _b : message.completed;
+            todo.title = (_a = req.body.title) !== null && _a !== void 0 ? _a : todo.title;
+            todo.completed = (_b = req.body.completed) !== null && _b !== void 0 ? _b : todo.completed;
         }
-        message
+        todo
             .save()
-            .then((message) => {
+            .then((todo) => {
             res.json("Todo edited");
         })
             .catch((err) => {
             res.status(400).send("Editing Failed");
         });
+    });
+});
+todoRoutes.route('/').get((req, res) => {
+    todo_model_1.default.find((e, todo) => {
+        if (e)
+            console.error(e);
+        else
+            res.json(todo);
     });
 });
 app.use("/todos", todoRoutes);

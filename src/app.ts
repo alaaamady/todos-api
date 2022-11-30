@@ -110,9 +110,9 @@ app.post("/login", (req, res) => {
   /** CRUDs */
   todoRoutes.route('/:id').get((req,res) => {
     const id = req.params.id;
-    TodoItem.findById(id, (e, message) => {
+    TodoItem.findById(id, (e, todo) => {
         if(e) console.log(`Error getting todo item with id: ${id}`)
-        res.json(message);
+        res.json(todo);
     })
   })
 
@@ -130,22 +130,29 @@ app.post("/login", (req, res) => {
 
   todoRoutes.route('/edit/:id').put((req, res) => {
     const id = req.params.id;
-    TodoItem.findById(id, (e, message) => {
-        if(!message){ 
+    TodoItem.findById(id, (e, todo) => {
+        if(!todo){ 
             res.status(404).send("Todo not found");
         } else { 
-            message.title = req.body.title ?? message.title;
-            message.completed = req.body.completed ?? message.completed;
+            todo.title = req.body.title ?? todo.title;
+            todo.completed = req.body.completed ?? todo.completed;
 
         }
-        message
+        todo
         .save()
-        .then((message) => {
+        .then((todo) => {
           res.json("Todo edited");
         })
         .catch((err) => {
           res.status(400).send("Editing Failed");
         });
+    })
+  })
+
+  todoRoutes.route('/').get((req, res) => {
+    TodoItem.find((e, todo) => {
+      if (e) console.error(e);
+      else res.json(todo);
     })
   })
 
