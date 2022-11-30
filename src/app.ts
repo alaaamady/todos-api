@@ -1,9 +1,9 @@
 require('dotenv').config();
 import express from 'express';
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
-import * as bcrypt from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
+import * as bcrypt from 'bcrypt'
 import TodoItem from './models/todo.model';
 import userModel from './models/user.model';
 const app = express();
